@@ -1,63 +1,44 @@
-// File: App.java
+import Presentation.LoginInterface;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import Presentation.PresentationLayer;
-import java.sql.*;
-
-import Business.PasswordHandler;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import Data.DataAccessLayer;
 
 public class App extends Application {
 
+    private Stage primaryStage;
+    private Scene initialScene;
+
     @Override
     public void start(Stage primaryStage) {
-        // Instantiate the PresentationLayer
-        PresentationLayer presentation = new PresentationLayer();
+                this.primaryStage = primaryStage;
 
-        // Create buttons
-        Button btnUser1 = new Button("User 1");
-        btnUser1.setOnAction(e -> System.out.println(presentation.getUser1()));
+        // Title label
+        Label titleLabel = new Label("UDST Education Learning System");
+        titleLabel.setStyle("-fx-font-size: 24px;");
 
-        Button btnUser2 = new Button("User 2");
-        btnUser2.setOnAction(e -> System.out.println(presentation.getUser2()));
+        // Initial scene with title and a button to show the login interface
+        Button loginButton = new Button("Login");
+        loginButton.setOnAction(e -> showLoginInterface());
 
-        Button btnUser3 = new Button("User 3");
-        btnUser3.setOnAction(e -> System.out.println(presentation.getUser3()));
-
-        // Add buttons to layout
-        HBox hbox = new HBox(10, btnUser1, btnUser2, btnUser3); // 10 is the spacing between buttons
-        String sql = "Select * from users;";
-        // Set up the scene and stage
-        Connection con = DataAccessLayer.establishConnection();
-        String password = "";
-        try{
-            Statement statement = con.createStatement();
-            ResultSet result = statement.executeQuery(sql);
-            while (result.next()) {
-                password = result.getString("PasswordHash");
-                System.out.println(result.getString("Email"));
-                
-            }
-            DataAccessLayer.connectionClose(con, null);
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-
-        boolean passwordMatches = PasswordHandler.verifyPassword("12class34", password);
-        System.out.println("Password matches: " + passwordMatches);
-        
-        Scene scene = new Scene(hbox, 300, 100);
-        primaryStage.setTitle("User Selection");
-        primaryStage.setScene(scene);
+        VBox root = new VBox(20);
+        root.getChildren().addAll(titleLabel, loginButton);
+        root.setAlignment(Pos.CENTER);
+        initialScene = new Scene(root, 600, 400);
+        primaryStage.setScene(initialScene);
+        primaryStage.setTitle("Educatoion App");
         primaryStage.show();
+    }
+
+    private void showLoginInterface() {
+        // Load the login interface and display it
+        LoginInterface loginUI = new LoginInterface();
+        Scene loginScene = new Scene(loginUI.createLoginPane(), 600, 400);
+        primaryStage.setScene(loginScene);
     }
 
     public static void main(String[] args) {
